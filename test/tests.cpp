@@ -129,6 +129,23 @@ TEST_F(TimedDoorTest, MultipleTimeoutCallsAfterClose) {
     EXPECT_NO_THROW(adapter->Timeout());
 }
 
+TEST_F(TimedDoorTest, DifferentTimeouts) {
+    TimedDoor fastDoor(100);
+    TimedDoor slowDoor(10000);
+
+    EXPECT_EQ(fastDoor.getTimeOut(), 100);
+    EXPECT_EQ(slowDoor.getTimeOut(), 10000);
+    EXPECT_NE(fastDoor.getTimeOut(), slowDoor.getTimeOut());
+}
+
+TEST_F(TimedDoorTest, AdapterWithTimerIntegration) {
+    door->unlock();
+
+    EXPECT_THROW({
+        adapter->Timeout();
+    }, std::runtime_error);
+}
+
 TEST(MockTimerClientTest, CanVerifyTimeoutCall) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
@@ -151,21 +168,4 @@ TEST(MockTimerClientTest, CanVerifyNoCalls) {
 TEST(TimerTest, TimerCanBeCreated) {
     Timer timer;
     EXPECT_TRUE(true);
-}
-
-TEST_F(TimedDoorTest, DifferentTimeouts) {
-    TimedDoor fastDoor(100);
-    TimedDoor slowDoor(10000);
-
-    EXPECT_EQ(fastDoor.getTimeOut(), 100);
-    EXPECT_EQ(slowDoor.getTimeOut(), 10000);
-    EXPECT_NE(fastDoor.getTimeOut(), slowDoor.getTimeOut());
-}
-
-TEST_F(TimedDoorTest, AdapterWithTimerIntegration) {
-    door->unlock();
-
-    EXPECT_THROW({
-        adapter->Timeout();
-    }, std::runtime_error);
 }
