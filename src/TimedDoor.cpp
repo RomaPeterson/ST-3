@@ -1,6 +1,8 @@
-// Copyright 2021 GHA Test Team
+// Copyright 2025 UNN-CS
 #include "TimedDoor.h"
 #include <stdexcept>
+#include <chrono>
+#include <thread>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
@@ -10,7 +12,8 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+TimedDoor::TimedDoor(int timeout)
+    : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
@@ -26,16 +29,24 @@ void TimedDoor::lock() {
     isOpened = false;
 }
 
-int TimedDoor::getTimeOut() const {
+int TimedDoor::getTimeOut() {
     return iTimeout;
 }
 
 void TimedDoor::throwState() {
-    throw std::runtime_error("Door is open");
+    throw std::runtime_error("Door left open!");
 }
 
-void Timer::tregister(int, TimerClient*) {
+void Timer::tregister(int timeout, TimerClient* timerClient) {
+    client = timerClient;
+    if (client != nullptr) {
+        sleep(timeout);
+        client->Timeout();
+    }
 }
 
-void Timer::sleep(int) {
+void Timer::sleep(int milliseconds) {
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(milliseconds)
+    );
 }
