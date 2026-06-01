@@ -47,6 +47,5 @@ void Timer::tregister(int timeout, TimerClient* timerClient) {
 
 void Timer::sleep(int milliseconds) {
     std::this_thread::sleep_for(
-        std::chrono::milliseconds(milliseconds)
-    );
+        std::chrono::milliseconds(milliseconds));
 }
